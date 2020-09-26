@@ -1,27 +1,45 @@
-import React from 'react';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
+import { CATEGORIES, MEALS } from "../data/data";
+import MealList from "../components/MealList";
 
+const CategoryMealScreen = (props) => {
+  const catId = props.navigation.getParam("categoryId");
 
-import { CATEGORIES, MEALS } from '../data/data';
-import { HeaderTitle } from 'react-navigation-stack';
-import Colors from "../constants/Colors";
+  const availableMeals = useSelector((state) => state.meals.filteredMeals);
 
-import MealList from '../components/MealList'
+  const displayedMeals = availableMeals.filter(
+    (meal) => meal.categoryIds.indexOf(catId) >= 0
+  );
 
-const CategoryMealScreen = props => {
+  if (displayedMeals.length === 0) {
+    return (
+      <View style={styles.content}>
+        <Text>No meals found, maybe check your filters?</Text>
+      </View>
+    );
+  }
 
-  const catId = props.navigation.getParam('categoryId');
-  const displayMeals = MEALS.filter(meal => meal.categoryIds.indexOf(catId) >=0);
-  return <MealList listData={displayMeals} navigation={props.navigation}/>
+  return <MealList listData={displayedMeals} navigation={props.navigation} />;
 };
 
-CategoryMealScreen.navigationOptions = navigationData => {
-  const catId = navigationData.navigation.getParam('categoryId');
-  const selectedCategory = CATEGORIES.find(cat => cat.id === catId);
+CategoryMealScreen.navigationOptions = (navigationData) => {
+  const catId = navigationData.navigation.getParam("categoryId");
+
+  const selectedCategory = CATEGORIES.find((cat) => cat.id === catId);
 
   return {
     headerTitle: selectedCategory.title,
   };
 };
 
+const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default CategoryMealScreen;
